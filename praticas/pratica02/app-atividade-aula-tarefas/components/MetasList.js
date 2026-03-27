@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
 
 export default function MetasList(props) {
     return (
@@ -8,8 +8,9 @@ export default function MetasList(props) {
                     <Pressable
                         android_ripple={{color: 'yellow'}}
                         onPress={() => props.onDeleteItem(meta.id)}
+                        key={meta.id}
                     >
-                        <Text style={{padding: 10}}>{meta.texto}</Text>
+                        <Text style={{padding: 8}}>{meta.texto}</Text>
                     </Pressable>
                 </View>
             ))}
@@ -20,7 +21,6 @@ export default function MetasList(props) {
 const styles = StyleSheet.create({
     item: {
         margin: 8,
-        borderRadius: 5,
-        backgroundColor: 'lightblue'
+        backgroundColor: 'lightblue',
     }
 });

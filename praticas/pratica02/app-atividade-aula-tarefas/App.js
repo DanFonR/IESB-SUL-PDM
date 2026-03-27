@@ -1,5 +1,5 @@
-import { StyleSheet, View, Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { StyleSheet, View, Image, Text } from 'react-native';
+import { useState } from 'react';
 import MetasList from './components/MetasList';
 import MetaInput from './components/MetaInput';
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -14,8 +14,6 @@ export default function App() {
   }
 
   function deletarMetaHandler(id) {
-    console.log(id);
-
     const novasMetas = metas.filter(meta => meta.id !== id);
 
     setMetas(novasMetas);
@@ -72,7 +70,7 @@ const styles = StyleSheet.create({
   topo: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center,'
+    alignItems: 'center',
   },
   headerText: {
     fontSize: 20,
