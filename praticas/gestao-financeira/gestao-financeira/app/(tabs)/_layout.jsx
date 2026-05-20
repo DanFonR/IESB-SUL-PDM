@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import colors from '../../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 
 export default function TabsLayout() {
   return (
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
   }
 });
 
+/** @type { BottomTabNavigationOptions } */
 const tabsScreenOptions = {
   headerStyle: styles.screenHeader,
   headerTintColor: colors.primaryContrast,
@@ -43,6 +45,7 @@ const tabsScreenOptions = {
   tabBarButton: (props) => <TouchableOpacity {...props} activeOpacity={0.8}/>,
 };
 
+/** @type { Record<string, BottomTabNavigationOptions> } */
 const screensOptions = {
   index: {
     title: 'Transações',

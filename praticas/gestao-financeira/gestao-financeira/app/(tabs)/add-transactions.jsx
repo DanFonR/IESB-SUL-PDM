@@ -6,7 +6,7 @@ import { useState } from 'react';
 export default function AddTransactions() {
     const initialForm = {
         description: '',
-        value: 0,
+        value: 0.0,
         date: '',
         category: 'Renda',
     };
