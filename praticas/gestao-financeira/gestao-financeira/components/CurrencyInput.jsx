@@ -4,7 +4,7 @@ import globalStyles from "../styles/globalStyles"
 /** 
  * @param { Object } props
  * @param { number } props.value
- * @param { (Object) => void } props.onChange
+ * @param { (string) => void } props.onChange
  * @param { React.RefObject } props.valueInputRef
 */
 export default function CurrencyInput({ value, onChange, valueInputRef }) {

@@ -5,16 +5,27 @@ import {
 } from "react-native";
 import Button from "../../components/Button";
 import globalStyles from "../../styles/globalStyles";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import DescriptionInput from "../../components/DescriptionInput";
 import CurrencyInput from "../../components/CurrencyInput";
 import DatePicker from "../../components/DatePicker";
 import CategoryPicker from "../../components/CategoryPicker";
+import { MoneyContext } from "../../contexts/GlobalState";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function parseCurrency(text) {
     const value = text.replace("/\D/g", "");
 
     return (parseFloat(value) || 0.0) / 100;
+}
+
+async function setAsyncStorage(data) {
+    try {
+        await AsyncStorage.setItem("transactions", JSON.stringify(data));
+    }
+    catch (e) {
+        console.error(e);
+    }
 }
 
 const initialForm = {
@@ -27,12 +38,23 @@ const initialForm = {
 export default function AddTransactions() {
     const [form, setForm] = useState(initialForm);
     const valueInputRef = useRef();
+    const [transactions, setTransactions] = useContext(MoneyContext);
 
     const transactionAlert = () => Alert.alert(
         "Dados Prontos!",
         `${form.description} | ${form.value} | `
       + `${form.date.toLocaleDateString("pt-BR")} | ${form.category}`,
     );
+
+    const addTransaction = async () => {
+        const updatedTransactions = [...transactions, { id: transactions.length + 1, ...form }];
+
+        setTransactions(updatedTransactions);
+        setForm(initialForm);
+        await setAsyncStorage(updatedTransactions);
+
+        Alert.alert("Sucesso!", "Transação adicionada com sucesso!");
+    }
 
     return (
         <KeyboardAvoidingView style={globalStyles.screenContainer} behavior="padding">
@@ -58,7 +80,7 @@ export default function AddTransactions() {
                             onChange={(itemValue) => setForm({ ...form, category: itemValue })}
                         />
                     </View>
-                    <Button onPress={transactionAlert}>Adicionar</Button>
+                    <Button onPress={addTransaction}>Adicionar</Button>
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -68,7 +90,7 @@ export default function AddTransactions() {
 const styles = StyleSheet.create({
     form: {
         gap: 12,
-        marginTop: 40,
+        marginTop: 10,
         marginBottom: 40,
     },
 });
