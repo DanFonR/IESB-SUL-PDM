@@ -1,9 +1,25 @@
-import { Text } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { useContext } from "react";
-import { MoneyContext } from "@/contexts/GlobalState";
+import { MoneyContext } from "../../contexts/GlobalState";
+import TransactionItem from "../../components/TransactionItem";
+import globalStyles from "../../styles/globalStyles";
 
 export default function Transactions() {
     const [transactions] = useContext(MoneyContext);
 
-    return <Text>{transactions[0]?.description}</Text>;
+    return (
+        <View style={globalStyles.screenContainer}>
+            <FlatList
+                data={transactions}
+                renderItem={({ item }) => <TransactionItem {...item} />}
+                ListEmptyComponent={
+                    <Text style={globalStyles.secondaryText}>
+                        Ainda não há itens!
+                    </Text>
+                }
+                style={globalStyles.content}
+                keyExtractor={(item) => String(item.id)}
+            />
+        </View>
+    );
 }

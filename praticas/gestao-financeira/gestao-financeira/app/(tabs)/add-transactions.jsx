@@ -40,12 +40,6 @@ export default function AddTransactions() {
     const valueInputRef = useRef();
     const [transactions, setTransactions] = useContext(MoneyContext);
 
-    const transactionAlert = () => Alert.alert(
-        "Dados Prontos!",
-        `${form.description} | ${form.value} | `
-      + `${form.date.toLocaleDateString("pt-BR")} | ${form.category}`,
-    );
-
     const addTransaction = async () => {
         const updatedTransactions = [...transactions, { id: transactions.length + 1, ...form }];
 
