@@ -34,6 +34,9 @@ function getTotals(transactions) {
     return totals;
 }
 
+// grafico pizza
+// filtro de data
+
 export default function Summary() {
     const [transactions] = useContext(MoneyContext);
     const totals = useMemo(getTotals, [transactions]);

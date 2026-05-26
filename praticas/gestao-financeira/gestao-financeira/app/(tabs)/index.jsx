@@ -4,6 +4,9 @@ import { MoneyContext } from "../../contexts/GlobalState";
 import TransactionItem from "../../components/TransactionItem";
 import globalStyles from "../../styles/globalStyles";
 
+// filtro data
+// onlongpress = modal (transactionitem = touchableopacity>...)
+
 export default function Transactions() {
     const [transactions] = useContext(MoneyContext);
 
