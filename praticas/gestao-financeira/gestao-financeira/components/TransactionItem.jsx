@@ -1,15 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import globalStyles from "../styles/globalStyles";
 import CategoryItem from "./CategoryItem";
-import categories from "../constants/categories";
 
-export default function TransactionItem({ category, date, description, value }) {
-    const valueStyle = (category === categories.income.name)?
+export default function TransactionItem({ item, onLongPress }) {
+    const {category, date, description, value } = item;
+
+    const valueStyle = (category?.isIncome)?
                         globalStyles.positiveText : globalStyles.negativeText;
     const currencyStyle = {style: "currency", currency: "BRL"};
+    const currencyValue = Number(value).toLocaleString("pt-BR", currencyStyle);
 
     return (
-        <>
+        <TouchableOpacity onLongPress={onLongPress} activeOpacity={0.7}>
             <View style={styles.itemContainer}>
                 <CategoryItem category={category} />
                 <View style={styles.textContainer}>
@@ -19,13 +21,13 @@ export default function TransactionItem({ category, date, description, value }) 
                     <View style={styles.bottomLineContainer}>
                         <Text style={globalStyles.primaryText}>{description}</Text>
                         <Text style={valueStyle}>
-                            {value.toLocaleString("pt-BR", currencyStyle)}
+                            {currencyValue}
                         </Text>
                     </View>
                 </View>
             </View>
             <View style={globalStyles.line} />
-        </>
+        </TouchableOpacity>
     );
 }
 

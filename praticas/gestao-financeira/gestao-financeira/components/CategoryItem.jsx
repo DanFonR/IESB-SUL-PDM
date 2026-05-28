@@ -1,18 +1,16 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
-import categories from "../constants/categories";
 import colors from "../constants/colors";
 
 export default function CategoryItem({ category }) {
-    const categoryConfig = categories[category] ?? categories.food;
     const categoryStyle = [
-        styles.background, { backgroundColor: categoryConfig.background }
+        styles.background, { backgroundColor: category.background }
     ];
 
     return (
         <View style={categoryStyle}>
             <MaterialIcons
-                name={categoryConfig.icon}
+                name={category.icon}
                 size={24}
                 color={colors.primaryContrast}
             />
@@ -28,5 +26,5 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-    }    
+    },
 });
