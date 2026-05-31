@@ -1,7 +1,7 @@
 // prisma/seed.js
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/prisma.js";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 const defaultCategories = [
     {
