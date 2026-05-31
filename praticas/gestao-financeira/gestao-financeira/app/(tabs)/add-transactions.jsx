@@ -1,17 +1,17 @@
 import {
-    Alert, Keyboard, KeyboardAvoidingView,
-    ScrollView, StyleSheet, TouchableWithoutFeedback,
-    View
+    ActivityIndicator, Alert, Keyboard,
+    KeyboardAvoidingView, ScrollView, StyleSheet,
+    Text, TouchableWithoutFeedback, View
 } from "react-native";
 import Button from "../../components/Button";
 import globalStyles from "../../styles/globalStyles";
-import { useContext, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import DescriptionInput from "../../components/DescriptionInput";
 import CurrencyInput from "../../components/CurrencyInput";
 import DatePicker from "../../components/DatePicker";
 import CategoryPicker from "../../components/CategoryPicker";
 import { MoneyContext } from "../../contexts/GlobalState";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import colors from "../../constants/colors";
 
 function parseCurrency(text) {
     const value = text.replace("/\D/g", "");
@@ -19,36 +19,89 @@ function parseCurrency(text) {
     return (parseFloat(value) || 0.0) / 100;
 }
 
-async function setAsyncStorage(data) {
-    try {
-        await AsyncStorage.setItem("transactions", JSON.stringify(data));
-    }
-    catch (e) {
-        console.error(e);
-    }
+function _defaultCategoryId(categories) {
+    if (categories.length === 0) return "";
+
+    const income = categories.find((c) => c.isIncome);
+
+    return (income)? income.id : categories[0].id;
 }
 
-const initialForm = {
-    description: '',
-    value: 0.0,
-    date: new Date(),
-    category: 'Renda',
-};
+function _buildInitialForm(categoryIdFunc) {
+    return {
+        description: "",
+        value: 0.0,
+        date: new Date(),
+        categoryId: categoryIdFunc,
+    };
+}
 
 export default function AddTransactions() {
-    const [form, setForm] = useState(initialForm);
+    const { categories, loading, addTransaction } = useContext(MoneyContext);
     const valueInputRef = useRef();
-    const [transactions, setTransactions] = useContext(MoneyContext);
 
-    const addTransaction = async () => {
-        const updatedTransactions = [...transactions, { id: transactions.length + 1, ...form }];
+    const defaultCategoryId = useMemo(() => _defaultCategoryId(categories), [categories]);
+    const buildInitialForm = () => _buildInitialForm(defaultCategoryId);
 
-        setTransactions(updatedTransactions);
-        setForm(initialForm);
-        await setAsyncStorage(updatedTransactions);
+    const [form, setForm] = useState(buildInitialForm);
+    const [submitting, setSubmitting] = useState(false);
 
-        Alert.alert("Sucesso!", "Transação adicionada com sucesso!");
+    if (!form.categoryId && defaultCategoryId) 
+        setForm((prev) => ({ ...prev, categoryId: defaultCategoryId }));
+
+    const handleAdd = async () => {
+        if (!form.description.trim()) {
+            Alert.alert("Informe a descrição");
+            return;
+        }
+        if (!form.value || form.value <= 0) {
+            Alert.alert("Informe um valor maior que zero");
+            return;
+        }
+        if (!form.categoryId) {
+            Alert.alert("Selecione uma categoria");
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            await addTransaction({
+                description: form.description.trim(),
+                value: form.value,
+                date: form.date,
+                categoryId: form.categoryId
+            });
+            setForm(buildInitialForm());
+            Alert.alert("Transação adicionada com sucesso");
+        }
+        catch (err) {
+            Alert.alert("Erro ao salvar", err.message ?? "Tente novamente");
+        }
+        finally {
+            setSubmitting(false);
+        }
     }
+
+    if (loading) 
+        return (
+            <View style={[globalStyles.screenContainer, styles.center]}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={globalStyles.secondaryText}>Carregando categorias...</Text>
+            </View>
+        );
+
+    if (categories.length === 0)
+        return (
+            <View style={[globalStyles.screenContainer, styles.center]}>
+                <Text style={globalStyles.primaryText}>
+                    Nenhuma categoria cadastrada.
+                </Text>
+                <Text style={globalStyles.secondaryText}>
+                    Vá até a aba &quot;Categorias&quot; para criar a primeira.
+                </Text>
+            </View>
+        );
 
     return (
         <KeyboardAvoidingView style={globalStyles.screenContainer} behavior="padding">
@@ -70,11 +123,11 @@ export default function AddTransactions() {
                             onChange={(value) => setForm({...form, date: value})}
                         />
                         <CategoryPicker
-                            value={form.category}
-                            onChange={(itemValue) => setForm({ ...form, category: itemValue })}
+                            value={form.categoryId}
+                            onChange={(itemValue) => setForm({ ...form, categoryId: itemValue })}
                         />
                     </View>
-                    <Button onPress={addTransaction}>Adicionar</Button>
+                    <Button onPress={handleAdd}>{(submitting)? "Salvando..." : "Adicionar"}</Button>
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -86,5 +139,11 @@ const styles = StyleSheet.create({
         gap: 12,
         marginTop: 10,
         marginBottom: 40,
+    },
+    center: {
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        padding: 24,
     },
 });

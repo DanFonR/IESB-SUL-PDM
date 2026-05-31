@@ -1,9 +1,13 @@
 import { StyleSheet, Text, TouchableHighlight } from "react-native";
 import colors from "../constants/colors";
 
-export default function Button({ children, onPress }) {
+export default function Button({ children, onPress, disabled = false }) {
     return (
-        <TouchableHighlight style={styles.background} onPress={onPress}>
+        <TouchableHighlight
+            style={[styles.background, disabled && styles.disabled]}
+            onPress={(disabled)? undefined : onPress}
+            underlayColor={colors.primary}
+        >
             <Text style={styles.text}>{children}</Text>
         </TouchableHighlight>
     );
@@ -23,4 +27,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "600",
     },
+    disabled: {
+        opacity: 0.6,
+    }
 });

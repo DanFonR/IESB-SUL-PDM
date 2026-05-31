@@ -1,12 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import CategoryItem from "./CategoryItem";
-import categories from "../constants/categories";
 import globalStyles from "../styles/globalStyles";
 
 export default function SummaryItem({ category, value }) {
-    const categoryConfig = categories[category] ?? categories.food;
-    const valueStyle = (category === categories.income.name)?
+    const valueStyle = (category?.isIncome)?
                         globalStyles.positiveText : globalStyles.negativeText;
 
     const currencyConfig = { style: "currency", currency: "BRL"};
@@ -16,7 +14,7 @@ export default function SummaryItem({ category, value }) {
             <CategoryItem category={category} />
             <View style={styles.textContainer}>
                 <Text style={globalStyles.primaryText}>
-                    {categoryConfig.displayName}
+                    {category.displayName}
                 </Text>
                 <Text style={valueStyle}>
                     {value.toLocaleString("pt-BR", currencyConfig)}

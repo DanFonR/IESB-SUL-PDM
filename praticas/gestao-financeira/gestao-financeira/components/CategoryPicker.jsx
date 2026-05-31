@@ -2,17 +2,16 @@ import { Picker } from "@react-native-picker/picker"
 import { StyleSheet, Text, View } from "react-native"
 import globalStyles from "../styles/globalStyles"
 import colors from "../constants/colors"
-import categories from "../constants/categories"
 
 /**
  * @param { Object } props
  * @param { Object } props.value
  * @param { (Object) => void } props.onChange
 */
-export default function CategoryPicker({ value, onChange }) {
-    const pickerItems = Object.values(categories).map(
-        ({displayName, name}, index) => (
-            <Picker.Item key={index} label={displayName} value={name} />
+export default function CategoryPicker({ value, onChange, categories }) {
+    const pickerItems = categories.map(
+        ({ id, displayName }) => (
+            <Picker.Item key={id} label={displayName} value={id} />
         )
     );
 
@@ -37,5 +36,5 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         flexGrow: 1
-    }
-})
+    },
+});

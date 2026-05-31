@@ -1,69 +1,70 @@
 import { useContext, useMemo } from "react";
 import { MoneyContext } from "../../contexts/GlobalState";
-import categories from "../../constants/categories";
 import globalStyles from "../../styles/globalStyles";
 import SummaryItem from "../../components/SummaryItem";
-import { StyleSheet, Text, View } from "react-native";
+import {
+    ActivityIndicator, ScrollView, StyleSheet,
+    Text, View
+} from "react-native";
 import colors from "../../constants/colors";
 
-const SUMMARY_CATEGORY_KEYS = [
-  categories.income.name,
-  categories.food.name,
-  categories.house.name,
-  categories.education.name,
-  categories.travel.name,
-];
+const currencyStyle = {style: "currency", currency: "BRL"};
 
-function getTotals(transactions) {
-    const totals = Object.fromEntries(
-        ["sum", "income", "food", "education", "house", "travel"]
-        .map((key) => [key, 0])
-    );
+function getTotals(transactions, categories) {
+    const totals = {};
+    let saldo = 0;
+
+    for (const category of categories) totals[category.id] = 0;
 
     for (const item of transactions) {
-        if (!SUMMARY_CATEGORY_KEYS.includes(item.category)) continue;
+        const value = Number(item.value);
+        const cat = item.category ?? categories.find((c) => c.id === item.categoryId);
 
-        totals[item.category] += item.value;
-
-        if (item.category === categories.income.name)
-            totals.sum += item.value;
+        if (cat?.isIncome)
+            saldo += value;
         else
-            totals.sum -= item.value;
+            saldo -= value;
     }
 
-    return totals;
+    return { totalsById: totals, balance: saldo };
 }
 
-// grafico pizza
-// filtro de data
-
 export default function Summary() {
-    const [transactions] = useContext(MoneyContext);
-    const totals = useMemo(getTotals, [transactions]);
-    const valueStyle = (totals.sum > 0)? globalStyles.positiveText : globalStyles.negativeText;
-    const currencyStyle = {style: "currency", currency: "BRL"};
-    const summaryItems = Object.values(categories).map(
-        (category, index) => (
-            <SummaryItem
-                key={index}
-                category={category.name}
-                value={totals[category.name]}
-            />
-        )
+    const { transactions, categories, loading } = useContext(MoneyContext);
+    const { totalsById, balance } = useMemo(
+        () => getTotals(transactions, categories),
+        [transactions, categories]
     );
+
+    if (loading && categories.length === 0)
+        return (
+            <View style={[globalStyles.screenContainer, styles.center]}>
+                <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+        );
+
+    const balanceStyle = (balance >= 0)? globalStyles.positiveText : globalStyles.negativeText;
+    const summaryItems = categories.map(
+        (category) => (
+            <SummaryItem
+                key={category.id}
+                category={category.name}
+                value={totalsById[category.id] ?? 0}
+            />
+    ));
 
     return (
         <View style={globalStyles.screenContainer}>
-            <View style={globalStyles.content}>
+            <ScrollView style={globalStyles.content}>
                 {summaryItems}
                 <View style={globalStyles.line} />
                 <View style={styles.balance}>
                     <Text style={styles.balanceText}>Saldo</Text>
-                    <Text style={valueStyle}>
-                        {totals.sum.toLocaleString("pt-BR", currencyStyle)}
+                    <Text style={balanceStyle}>
+                        {balance.toLocaleString("pt-BR", currencyStyle)}
                     </Text>
                 </View>
-            </View>
+            </ScrollView>
         </View>
     );
 }
@@ -77,6 +78,11 @@ const styles = StyleSheet.create({
     balanceText: {
         fontSize: 18,
         color: colors.primaryText,
-        fontWeight: 800,
+        fontWeight: "800",
+    },
+    center: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
     },
 });

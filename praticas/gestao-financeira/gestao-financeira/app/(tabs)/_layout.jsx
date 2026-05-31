@@ -9,6 +9,7 @@ export default function TabsLayout() {
     return (
         <Tabs screenOptions={tabsScreenOptions}>
             <Tabs.Screen name="index" options={screensOptions.index} />
+            <Tabs.Screen name="categories" options={screensOptions.categories} />
             <Tabs.Screen name="add-transactions" options={screensOptions.addTransactions} />
             <Tabs.Screen name="summary" options={screensOptions.summary} />
         </Tabs>
@@ -65,5 +66,9 @@ const screensOptions = {
     summary: {
         title: 'Resumo',
         tabBarIcon: ({ color }) => <MaterialIcons name='pie-chart' size={28} color={color} />,
+    },
+    categories: {
+        title: "Categorias",
+        tabBarIcon: ({ color }) => <MaterialIcons name="category" size={26} color={color} />,
     }
 };
