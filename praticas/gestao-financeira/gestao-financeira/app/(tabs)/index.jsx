@@ -3,33 +3,62 @@ import {
     RefreshControl, StyleSheet, Text,
     TouchableOpacity, View
 } from "react-native";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MoneyContext } from "../../contexts/GlobalState";
 import TransactionItem from "../../components/TransactionItem";
 import globalStyles from "../../styles/globalStyles";
 import colors from "../../constants/colors";
+import MonthYearPicker from "../../components/MonthYearPicker";
+import EditTransactionModal from "../../components/EditTransactionModal";
 
-function longPressAlert(item, onPress) {
+function longPressMenu(item, onEdit, onDelete) {
     const cancelButton = { text: "Cancelar", style: "cancel" };
-    const confirmButton = { text: "Excluir", style: "destructive", onPress: onPress };
+    const confirmButton = { text: "Excluir", style: "destructive", onPress: () => onDelete(item) };
+    const editButton = { text: "Editar", onPress: () => onEdit(item) };
 
     Alert.alert(
-        "Excluir transação", `Deseja excluir ${item.id}?`,
-        [cancelButton, confirmButton], { cancelable: true }
+        item.description,
+        `Valor: ${Number(item.value).toLocaleString("pt-BR", {style: "currency", currency: "BRL"})}`,
+        [editButton, cancelButton, confirmButton], { cancelable: true }
     );
 }
 
 export default function Transactions() {
-    const { transactions, loading, error, refresh, removeTransaction } = useContext(MoneyContext);
-    const onPress = (item) => (async () => {
-        try {
-            await removeTransaction(item.id);
-        }
-        catch (err) {
-            Alert.alert("Erro ao excluir", err.message ?? "Tente novamente");
-        }
-    });
-    const handleLongPress = (item) => longPressAlert(item, onPress(item));
+    const {
+        transactions, loading, error,
+        refresh, removeTransaction, filtroMes,
+        filtroAno, changeFilter, user
+    } = useContext(MoneyContext);
+    const [editingItem, setEditingItem] = useState(null);
+
+    const handleDelete = (item) => {
+        const cancelButton = { text: "Cancelar", style: "cancel" };
+        const deleteButton = {
+            text: "Excluir", style: "destructive",
+            onPress: async () => {
+                try {
+                    await removeTransaction(item.id);
+                }
+                catch (err) {
+                    Alert.alert("Erro ao excluir", err.message ?? "Tente novamente");
+                }
+            }
+        };
+
+        Alert.alert(
+            "Excluir transação",
+            `Deseja excluir "${item.description}"?`,
+            [cancelButton, deleteButton], { cancelable: true }
+        );
+    };
+    const handleLongPress = (item) => longPressMenu(item, setEditingItem, handleDelete);
+
+    useEffect(() => {
+        const name = (user)? user.name.split(" ")[0] : "Usuário";
+
+        if (!error)
+            Alert.alert(`Olá, ${name}`, "Seja bem-vindo(a)");
+    }, [error, user]);
 
     if (loading && transactions.length === 0)
         return (
@@ -54,6 +83,7 @@ export default function Transactions() {
 
     return (
         <View style={globalStyles.screenContainer}>
+            <MonthYearPicker month={filtroMes} year={filtroAno} onChange={changeFilter} />
             <FlatList
                 data={transactions}
                 renderItem={({ item }) => (
@@ -67,9 +97,20 @@ export default function Transactions() {
                         Ainda não há itens!
                     </Text>
                 }
-                refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={() => refresh(filtroMes, filtroAno)}
+                    />
+                }
                 contentContainerStyle={styles.listContent}
                 keyExtractor={(item) => String(item.id)}
+            />
+
+            <EditTransactionModal
+                visible={Boolean(editingItem)}
+                transaction={editingItem}
+                onClose={() => setEditingItem(null)}
             />
         </View>
     );
@@ -98,5 +139,16 @@ const styles = StyleSheet.create({
     retryText: {
         color: colors.primaryContrast,
         fontWeight: "600",
+    },
+    welcomeBanner: {
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        backgroundColor: "#FFF",
+        borderBottomWidth: 1,
+        borderBottomColor: "#EEE",
+    },
+    welcomeText: {
+        fontSize: 15,
+        color: colors.primaryText,
     },
 });

@@ -9,7 +9,7 @@ import colors from "../constants/colors"
  * @param { (Object) => void } props.onChange
 */
 export default function CategoryPicker({ value, onChange, categories }) {
-    const pickerItems = categories.map(
+    const pickerItems = categories?.map(
         ({ id, displayName }) => (
             <Picker.Item key={id} label={displayName} value={id} />
         )

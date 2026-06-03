@@ -10,6 +10,7 @@ import Button from "../../components/Button";
 import CategoryItem from "../../components/CategoryItem";
 import globalStyles from "../../styles/globalStyles";
 import colors from "../../constants/colors";
+import { Picker } from "@react-native-picker/picker";
 
 const PRESET_COLORS = [
     "#DE9AC3",
@@ -30,6 +31,7 @@ export default function CategoriesScreen() {
     const [icon, setIcon] = useState("label");
     const [background, setBackground] = useState(PRESET_COLORS[0]);
     const [submitting, setSubmitting] = useState(false);
+    const [isIncome, setIsIncome] = useState(false);
 
     const resetForm = () => {
         setName("");
@@ -60,7 +62,7 @@ export default function CategoriesScreen() {
                 displayName: displayName.trim(),
                 icon: icon.trim(),
                 background,
-                isIncome: false,
+                isIncome: isIncome,
             });
             resetForm();
             Alert.alert("Categoria criada!");
@@ -85,8 +87,14 @@ export default function CategoriesScreen() {
                     onPress: async () => {
                         try {
                             await removeCategory(item.id);
-                        } catch (e) {
-                            Alert.alert("Erro ao excluir", e.message ?? "Tente novamente.");
+                        }
+                        catch (err) {
+                            let msg = err.message ?? "Tente novamente";
+
+                            if (msg.includes("FK"))
+                                msg = "Há transações contendo essa categoria.\nExclua-as primeiro.";
+
+                            Alert.alert("Erro ao excluir", msg);
                         }
                     },
                 },
@@ -143,6 +151,16 @@ export default function CategoriesScreen() {
                 autoCapitalize="none"
                 style={globalStyles.input}
                 />
+                </View>
+
+                <View>
+                    <Text style={globalStyles.inputLabel}>É renda?</Text>
+                    <View style={styles.picker}>
+                        <Picker onValueChange={(val) => setIsIncome(val)}>
+                            <Picker.Item value={false} label="Não" />
+                            <Picker.Item value={true} label="Sim" />
+                        </Picker>
+                    </View>
                 </View>
 
                 <View>
@@ -243,5 +261,14 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+    },
+    picker: {
+        display: "flex",
+        justifyContent: "center",
+        height: 44,
+        borderColor: colors.secondaryText,
+        borderWidth: 1,
+        borderRadius: 8,
+        flexGrow: 1
     },
 });

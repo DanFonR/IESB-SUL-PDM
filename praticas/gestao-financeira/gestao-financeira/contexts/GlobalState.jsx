@@ -1,36 +1,59 @@
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-import { api } from "../services/api";
+import { api, setToken } from "../services/api";
 import { createContext, useCallback, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const MoneyContext = createContext();
 
-/*async function getAsyncStorage(setter) {
+async function restoreSession(userSetter) {
+    const token = await AsyncStorage.getItem("@token");
+
+    if (!token) return false;
+
+    setToken(token);
+
     try {
-        const storedTransactions = await AsyncStorage.getItem("transactions");
+        const me = await api.getUser();
 
-        if (!storedTransactions) return;
+        userSetter(me);
 
-        setter(JSON.parse(storedTransactions));
+        return true;
     }
-    catch (e) {
-        console.error(e);
+    catch {
+        await AsyncStorage.removeItem("@token");
+
+        setToken(null);
+
+        return false;
     }
-}*/
+}
 
 export default function GlobalState({ children }) {
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [user, setUser] = useState(null);
 
-    const refresh = useCallback(async () => {
+    const now = new Date();
+    const [filtroMes, setFiltroMes] = useState(now.getMonth() + 1);
+    const [filtroAno, setFiltroAno] = useState(now.getFullYear());
+
+    useEffect(() => {
+        restoreSession(setUser)
+        .finally(() => setLoading(false))
+    }, []);
+
+    const refresh = useCallback(async (mes, ano) => {
         setLoading(true);
         setError(null);
+
+        const mesSelecionado = mes ?? filtroMes;
+        const anoSelecionado = ano ?? filtroAno;
 
         try {
             const [cats, txs] = await Promise.all([
                 api.listCategories(),
-                api.listTransactions(),
+                api.listTransactions(mesSelecionado, anoSelecionado),
             ]);
 
             setCategories(cats);
@@ -42,9 +65,36 @@ export default function GlobalState({ children }) {
         finally {
             setLoading(false);
         }
+    }, [filtroMes, filtroAno]);
+
+    useEffect(() => { if (user) refresh(); }, [user, refresh]);
+
+    const changeFilter = useCallback((mes, ano) => {
+        setFiltroAno(ano);
+        setFiltroMes(mes);
     }, []);
 
-    useEffect(() => refresh(), [refresh]);
+    const login = useCallback(async (email, password) => {
+        const { user, token } = await api.login({ email, password });
+
+        await AsyncStorage.setItem("@token", token);
+        setToken(token);
+        setUser(user);
+    }, []);
+
+    const register = useCallback(async (name, email, password) => {
+        const { user, token } = await api.register({ name, email, password });
+
+        await AsyncStorage.setItem("@token", token);
+        setToken(token);
+        setUser(user);
+    }, []);
+
+    const logout = useCallback(async () => {
+        await AsyncStorage.removeItem("@token");
+        setToken(null);
+        setUser(null);
+    }, []);
 
     const addTransaction = useCallback(async (data) => {
         const created = await api.createTransaction(data);
@@ -52,6 +102,14 @@ export default function GlobalState({ children }) {
         setTransactions((prev) => [created, ...prev]);
 
         return created;
+    }, []);
+
+    const updateTransaction = useCallback(async (id, data) => {
+        const updated = await api.updateTransaction(id, data);
+
+        setTransactions((prev) => (
+            prev.map((t) => ((t.id === id)? {...t, ...updated} : t))
+        ));
     }, []);
 
     const removeTransaction = useCallback(async (id) => {
@@ -70,21 +128,38 @@ export default function GlobalState({ children }) {
         return created;
     }, []);
 
+    const updateCategory = useCallback(async (id, data) => {
+        const updated = await api.updateCategory(id, data);
+
+        setCategories((prev) => (
+            prev.map((c) => ((c.id === id)? {...c, ...updated} : c))
+        ));
+    }, []);
+
     const removeCategory = useCallback(async (id) => {
         await api.deleteCategory(id);
         setCategories((prev) => prev.filter((c) => c.id !== id));
     }, []);
 
     const globalExports = {
-        transactions,
         categories,
-        loading,
         error,
-        refresh,
-        addTransaction,
-        removeTransaction,
+        filtroAno,
+        filtroMes,
+        loading,
+        transactions,
+        user,
         addCategory,
+        addTransaction,
+        changeFilter,
+        login,
+        logout,
+        register,
+        refresh,
         removeCategory,
+        removeTransaction,
+        updateCategory,
+        updateTransaction,
     };
 
     return (

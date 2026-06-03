@@ -14,7 +14,7 @@ import { MoneyContext } from "../../contexts/GlobalState";
 import colors from "../../constants/colors";
 
 function parseCurrency(text) {
-    const value = text.replace("/\D/g", "");
+    const value = text.replace(/\D/g, "");
 
     return (parseFloat(value) || 0.0) / 100;
 }
@@ -125,6 +125,7 @@ export default function AddTransactions() {
                         <CategoryPicker
                             value={form.categoryId}
                             onChange={(itemValue) => setForm({ ...form, categoryId: itemValue })}
+                            categories={categories}
                         />
                     </View>
                     <Button onPress={handleAdd}>{(submitting)? "Salvando..." : "Adicionar"}</Button>
