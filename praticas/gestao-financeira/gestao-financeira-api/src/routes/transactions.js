@@ -18,7 +18,7 @@ function buildDateFilter(query) {
     return { date: { gte: start, lte: end } };
 }
 
-// GET /transactions?month=5&year=2025
+// GET /transactions - Lista transações, filtradas por mês e ano
 router.get("/", async (req, res, next) => {
     try {
         const dateFilter = buildDateFilter(req.query);
@@ -35,7 +35,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-// POST /transactions
+// POST /transactions - Cria uma transação, e a retorna
 router.post("/", async (req, res, next) => {
     try {
         const data = createTransactionSchema.parse(req.body);
@@ -58,7 +58,7 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-// PUT /transactions/:id
+// PATCH /transactions/:id - Atualiza uma transação, e a retorna
 router.patch("/:id", async (req, res, next) => {
     try {
         const existing = await prisma.transaction.findFirst({
@@ -84,7 +84,7 @@ router.patch("/:id", async (req, res, next) => {
     }
 });
 
-// DELETE /transactions/:id
+// DELETE /transactions/:id - Deleta uma transação
 router.delete("/:id", async (req, res, next) => {
     try {
         const existing = await prisma.transaction.findFirst({

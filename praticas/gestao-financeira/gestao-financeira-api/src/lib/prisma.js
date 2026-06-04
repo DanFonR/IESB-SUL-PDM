@@ -1,8 +1,8 @@
-// src/lib/prisma.js
 import "dotenv/config";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "../generated/prisma/client/index.js";
 
+// Necessário para funcionar com Prisma 7 e usar o MySQL
 const adapter = new PrismaMariaDb({
     host:            process.env.DATABASE_HOST,
     port:            Number(process.env.DATABASE_PORT ?? 3306),

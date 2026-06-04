@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 
 const router = Router();
 
-// GET /categories — retorna categorias padrão + categorias do usuário
+// GET /categories — Retorna categorias padrão + categorias do usuário
 router.get("/", async (req, res, next) => {
     try {
         const categories = await prisma.category.findMany({
@@ -20,7 +20,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-// POST /categories
+// POST /categories - Cria uma categoria e a retorna
 router.post("/", async (req, res, next) => {
     try {
         const data = createCategorySchema.parse(req.body);
@@ -35,7 +35,7 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-// PATCH /categories/:id
+// PATCH /categories/:id - Atualiza parte de uma categoria e a retorna
 router.patch("/:id", async (req, res, next) => {
     try {
         const existing = await prisma.category.findUnique({ where: { id: req.params.id } });
@@ -57,7 +57,7 @@ router.patch("/:id", async (req, res, next) => {
     }
 });
 
-// DELETE /categories/:id
+// DELETE /categories/:id - Deleta uma categoria
 router.delete("/:id", async (req, res, next) => {
     try {
         const existing = await prisma.category.findUnique({ where: { id: req.params.id } });

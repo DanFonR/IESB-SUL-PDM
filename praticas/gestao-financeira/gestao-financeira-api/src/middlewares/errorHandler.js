@@ -1,5 +1,15 @@
 import { StatusCodes } from "http-status-codes";
+import {Request, Response, NextFunction, Error} from "express";
+import { PrismaClientKnownRequestError as PError } from "../generated/prisma/client/runtime/client";
 
+/**
+ * @description Intercepta alguns erros comuns
+ * @param {*} err 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @param {NextFunction} _next 
+ * @returns 
+ */
 export function errorHandler(err, req, res, _next) {
     console.error(err);
 

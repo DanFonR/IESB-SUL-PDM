@@ -16,7 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rota pública
+// Rotas públicas
 app.get("/", (req, res) => res.json({ ok: true, name: "gestao-financeira-api" }));
 app.get("/ready", async (req, res) => {
     try {

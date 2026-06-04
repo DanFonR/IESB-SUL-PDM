@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 
 const router = Router();
 
+// POST /auth/register - Rota para criar uma conta
 router.post("/register", async (req, res, next) => {
     try {
         const data = createUserSchema.parse(req.body);
@@ -30,6 +31,7 @@ router.post("/register", async (req, res, next) => {
     }
 });
 
+// POST /auth/login - Rota para checar se a conta existe, e autenticar o usuário
 router.post("/login", async (req, res, next) => {
     try {
         const { email, password } = req.body;

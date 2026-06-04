@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 
 const router = Router();
 
+// GET /users - Lista os dados do usuário logado
 router.get("/", async (req, res, next) => {
     try {
         const user = await prisma.user.findUnique({
@@ -20,6 +21,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
+// PATCH /users - Atualiza dados do usuário logado
 router.patch("/", async (req, res, next) => {
     try {
         const data = updateUserSchema.parse(req.body);
