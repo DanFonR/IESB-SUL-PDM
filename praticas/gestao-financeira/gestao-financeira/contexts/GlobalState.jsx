@@ -4,6 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const MoneyContext = createContext();
 
+/**
+ * @description Restaura a sessão do usuário obtendo um token JWT e usando um setter para registrar o usuário
+ * @param {(Object) => void} userSetter Função vinda de `useState` para guardar o usuário obtido da API
+ */
 async function restoreSession(userSetter) {
     const token = await AsyncStorage.getItem("@token");
 
@@ -19,8 +23,8 @@ async function restoreSession(userSetter) {
         return true;
     }
     catch {
+        // Token expirado ou inválido
         await AsyncStorage.removeItem("@token");
-
         setToken(null);
 
         return false;
@@ -38,12 +42,18 @@ export default function GlobalState({ children }) {
     const [filtroMes, setFiltroMes] = useState(now.getMonth() + 1);
     const [filtroAno, setFiltroAno] = useState(now.getFullYear());
 
+    // Ao inicializar o app, checar se há token para logar o usuário automaticamente
     useEffect(() => {
         restoreSession(setUser)
         .finally(() => setLoading(false))
     }, []);
 
-    const refresh = useCallback(async (mes, ano) => {
+    /**
+     * @description Recarrega a aba principal com filtro de data
+     * @param {number?} mes Mês para filtrar
+     * @param {number?} ano Ano para filtrar
+     */
+    const refresh = useCallback(/** @param {number?} mes @param {number?} ano */ async (mes, ano) => {
         setLoading(true);
         setError(null);
 

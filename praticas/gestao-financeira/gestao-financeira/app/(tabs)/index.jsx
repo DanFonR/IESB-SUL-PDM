@@ -11,6 +11,12 @@ import colors from "../../constants/colors";
 import MonthYearPicker from "../../components/MonthYearPicker";
 import EditTransactionModal from "../../components/EditTransactionModal";
 
+/**
+ * @description Cria menu para tratar toque longo em itens de transação
+ * @param {Object} item Uma transação
+ * @param {(Object?) => void} onEdit O que fazer ao editar o item
+ * @param {(Object?) => void} onDelete O que fazer ao deletar um item
+ */
 function longPressMenu(item, onEdit, onDelete) {
     const cancelButton = { text: "Cancelar", style: "cancel" };
     const confirmButton = { text: "Excluir", style: "destructive", onPress: () => onDelete(item) };
@@ -53,6 +59,7 @@ export default function Transactions() {
     };
     const handleLongPress = (item) => longPressMenu(item, setEditingItem, handleDelete);
 
+    // Mensagem de boas vindas inicial
     useEffect(() => {
         const name = (user)? user.name.split(" ")[0] : "Usuário";
 

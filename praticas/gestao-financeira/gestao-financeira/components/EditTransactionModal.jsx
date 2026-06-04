@@ -18,7 +18,8 @@ function parseCurrency(text) {
 }
 
 /**
- * @param {{ visible: boolean, transaction: object|null, onClose: () => void }} props
+ * @description Modal para edição de transações
+ * @param {{ visible: boolean, transaction: Object | null, onClose: () => void }} props
  */
 export default function EditTransactionModal({ visible, transaction, onClose }) {
     const { categories, updateTransaction } = useContext(MoneyContext);

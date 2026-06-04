@@ -2,10 +2,11 @@ import { Text, TextInput, View } from "react-native";
 import globalStyles from "../styles/globalStyles";
 
 /**
- * @param { Object } props
- * @param { string } props.value
- * @param { (Object) => void } props.onChange
- * @param { React.RefObject } props.valueInputRef
+ * @description Entrada para descrição de transação
+ * @param {Object} props
+ * @param {string} props.value O texto exibido
+ * @param {(string) => void | Promise<void>} props.onChange O que fazer ao editar o texto
+ * @param {React.RefObject} props.valueInputRef Referência
  */
 export default function DescriptionInput({ value, onChange, valueInputRef }) {
     return (

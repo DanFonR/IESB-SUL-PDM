@@ -13,6 +13,11 @@ import CategoryPicker from "../../components/CategoryPicker";
 import { MoneyContext } from "../../contexts/GlobalState";
 import colors from "../../constants/colors";
 
+/**
+ * @description Converte BRL em `number`
+ * @param {string} text O valor em texto
+ * @returns {number} Um valor que pode ser usado em cálculos
+ */
 function parseCurrency(text) {
     const value = text.replace(/\D/g, "");
 
@@ -27,6 +32,11 @@ function _defaultCategoryId(categories) {
     return (income)? income.id : categories[0].id;
 }
 
+/**
+ * @description Cria um formulário em branco
+ * @param {{description: string, value: number, date: Date, categoryId: string}} categoryIdFunc 
+ * @returns {{description: string, value: number, date: Date, categoryId: string}} Um formulário em branco
+ */
 function _buildInitialForm(categoryIdFunc) {
     return {
         description: "",
@@ -36,6 +46,10 @@ function _buildInitialForm(categoryIdFunc) {
     };
 }
 
+/**
+ * @description Aba de registro de transações.
+ * Registra descrição, valor, data e categoria da transação
+ */
 export default function AddTransactions() {
     const { categories, loading, addTransaction } = useContext(MoneyContext);
     const valueInputRef = useRef();
@@ -46,7 +60,7 @@ export default function AddTransactions() {
     const [form, setForm] = useState(buildInitialForm);
     const [submitting, setSubmitting] = useState(false);
 
-    if (!form.categoryId && defaultCategoryId) 
+    if (!form.categoryId && defaultCategoryId)
         setForm((prev) => ({ ...prev, categoryId: defaultCategoryId }));
 
     const handleAdd = async () => {
@@ -83,7 +97,7 @@ export default function AddTransactions() {
         }
     }
 
-    if (loading) 
+    if (loading)
         return (
             <View style={[globalStyles.screenContainer, styles.center]}>
                 <ActivityIndicator size="large" color={colors.primary} />

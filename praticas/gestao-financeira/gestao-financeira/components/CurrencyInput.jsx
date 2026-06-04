@@ -1,7 +1,7 @@
 import { Text, TextInput, View } from "react-native"
 import globalStyles from "../styles/globalStyles"
 
-/** 
+/**
  * @param { Object } props
  * @param { number } props.value
  * @param { (string) => void } props.onChange

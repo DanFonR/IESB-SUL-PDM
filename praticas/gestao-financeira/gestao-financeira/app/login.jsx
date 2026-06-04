@@ -9,23 +9,26 @@ import colors from "../constants/colors";
 import globalStyles from "../styles/globalStyles";
 import { Link } from "expo-router";
 import Button from "../components/Button";
+import { isEmail } from "validator";
 
 function validateEntries(email, password) {
-    if (!email.trim()) {
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
         Alert.alert("Campo obrigatório", "Informe o e-mail.");
         return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email.trim())) {
+    if (!isEmail(trimmedEmail)) {
         Alert.alert("E-mail inválido", "Informe um endereço de e-mail válido.");
         return false;
     }
+
     if (!password) {
         Alert.alert("Campo obrigatório", "Informe a senha.");
         return false;
     }
+
     if (password.length < 6) {
         Alert.alert("Senha muito curta", "A senha deve ter no mínimo 6 caracteres.");
         return false;

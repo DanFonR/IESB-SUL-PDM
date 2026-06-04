@@ -7,6 +7,9 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { useContext } from 'react';
 import { MoneyContext } from '../../contexts/GlobalState';
 
+/**
+ * @description Layout das abas do aplicativo após login
+ */
 export default function TabsLayout() {
     const { logout } = useContext(MoneyContext);
     const router = useRouter();
@@ -29,6 +32,7 @@ export default function TabsLayout() {
         );
     };
 
+    /** Header global para fazer logout */
     const headerRight = () => (
         <TouchableOpacity onPress={handleLogout} style={{ marginRight: 16 }}>
             <MaterialIcons name="logout" size={22} color={colors.primaryContrast} />
@@ -39,8 +43,8 @@ export default function TabsLayout() {
         <Tabs screenOptions={{...tabsScreenOptions, headerRight}}>
             <Tabs.Screen name="index" options={screensOptions.index} />
             <Tabs.Screen name="categories" options={screensOptions.categories} />
-            <Tabs.Screen name="add-transactions" options={screensOptions.addTransactions} />
             <Tabs.Screen name="summary" options={screensOptions.summary} />
+            <Tabs.Screen name="add-transactions" options={screensOptions.addTransactions} />
         </Tabs>
     );
 }

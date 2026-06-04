@@ -23,6 +23,7 @@ const PRESET_COLORS = [
     "#F5C26B",
 ];
 
+/** @description Aba de listagem e criação de categorias. Lista as padrões e as criadas pelo usuário. */
 export default function CategoriesScreen() {
     const { categories, loading, addCategory, removeCategory } = useContext(MoneyContext);
 
