@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import {Request, Response, NextFunction, Error} from "express";
-import { PrismaClientKnownRequestError as PError } from "../generated/prisma/client/runtime/client";
+import express from "express";
+const {Request, Response, NextFunction} = express;
 
 /**
  * @description Intercepta alguns erros comuns

@@ -39,8 +39,8 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
     try {
         const data = createTransactionSchema.parse(req.body);
-        const categoryCheck = await prisma.transaction.findUnique({
-            where: { categoryId: data.categoryId }
+        const categoryCheck = await prisma.category.findUnique({
+            where: { id: data.categoryId }
         });
 
         if (!categoryCheck)

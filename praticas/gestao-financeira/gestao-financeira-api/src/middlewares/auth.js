@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import {Request, Response, NextFunction} from "express";
+//import {Request, Response, NextFunction} from "express";
 
 /**
  * @description Verifica token JWT e barra requisições sem token ou com token inválido/expirado

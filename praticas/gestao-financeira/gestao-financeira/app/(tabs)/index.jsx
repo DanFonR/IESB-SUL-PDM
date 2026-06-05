@@ -63,7 +63,7 @@ export default function Transactions() {
     useEffect(() => {
         const name = (user)? user.name.split(" ")[0] : "Usuário";
 
-        if (!error)
+        if (!error && user)
             Alert.alert(`Olá, ${name}`, "Seja bem-vindo(a)");
     }, [error, user]);
 
