@@ -1,64 +1,42 @@
-# 📱 Programação para Dispositivos Móveis (React Native)
-Repositório base destinado às aulas teóricas e às atividades práticas da disciplina. Ao longo do semestre, utilizaremos este ambiente para construir, passo a passo, um **Aplicativo de Lista de Tarefas (To-Do List)**.
+# Gestão Financeira (Money)
 
-## 🛠️ Ambiente de Desenvolvimento
-Para acompanhar a disciplina, você precisará das seguintes ferramentas:
+## O que é
 
-| Ferramenta | O que é? | Recomendação |
-| :--- | :--- | :--- |
-| **Editor de código** | Ambiente onde você escreverá seu código (JS, JSX, TSX). | [Visual Studio Code](https://code.visualstudio.com/) | 
-| **Ambiente de Execução** | Necessário para rodar o Metro Bundler e gerenciar pacotes. | [Node.js (versão LTS)](https://nodejs.org/pt-br/) |
-| **Versionador** | Controla e registra o histórico de alterações do código. | [Git](https://git-scm.com/) |
-| **Testes Físicos** | App para espelhar o código do seu computador direto no celular. | [Expo Go (Android/iOS)](https://expo.dev/go) |
+É um aplicativo de gestão financeira, com registro de transações e categorias para elas.
 
-## 📂 Estrutura de Pastas
-Este repositório está organizado da seguinte forma:
-- **`aulas/`**: Contém os resumos teóricos e conceitos abordados em cada encontro.
-- **`praticas/`**: Contém o código das atividades práticas desenvolvidas (nosso App de Tarefas).
+## Como rodar
 
-## 🚀 Fluxo de Trabalho Acadêmico
-As atividades seguem um fluxo de trabalho profissional baseado no modelo [GitFlow](https://www.atlassian.com/br/git/tutorials/comparing-workflows/gitflow-workflow).
+1. Instale o Node (v25), além do NPM, e o MySQL.
+2. No MySQL, crie o banco de dados com o seguinte comando
 
-### 1. Configuração Inicial (Realizar apenas uma vez)
-1. **Criar Repositório**: Clique no botão verde `Use this template`, no topo desta página, e escolha `Create a new repository` para criar a sua cópia.
-2. **Clonar Repositório**: Faça o clone do *seu* repositório para a sua máquina:
-```bash
-git clone [https://github.com/SEU_USUARIO/NOME_DO_SEU_REPOSITORIO.git](https://github.com/SEU_USUARIO/NOME_DO_SEU_REPOSITORIO.git)
+```sql
+CREATE DATABASE IF NOT EXISTS gestao_financeira CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ```
 
-### 2.Configurar Git: Certifique-se de que seu nome e e-mail estão corretos:
-```bash
-git config --global user.name "Seu Nome"
-git config --global user.email "seu@email.com"
-```
+3. Vá para a [pasta do frontend](./praticas/gestao-financeira/gestao-financeira/) e rode
 
-## Ciclo de Cada Prática (Repetir a cada aula)
-Para cada nova funcionalidade do nosso App, siga este fluxo:
-1. **Crie a Issue:** Acesse a aba Issues no seu GitHub, clique em New issue e use o template da prática do dia.
-2. **Crie a Branch:** A partir da branch main (ou develop), crie uma nova branch para a funcionalidade:
-```bash
-git checkout -b feature/praticaXX
-```
-3. Rode o Projeto: Acesse a pasta correspondente, instale as dependências e inicie o Expo:
 ```bash
 npm install
+node env.js
 npx expo start
 ```
-4. Desenvolva e Teste: Escreva o código solicitado na prática e teste no seu celular usando o Expo Go.
-5. Salve e Envie (Commit & Push):
+
+Isso instalará as dependências necessárias para o frontend do aplicativo e iniciará um servidor Expo para que possa ser acessado pelo Expo Go no celular (caso queira rodar no emulador de Android, rode `npx expo run android`). **Mantenha o terminal aberto.**
+
+4. Abra outro terminal, vá para a [pasta do backend](./praticas/gestao-financeira/gestao-financeira-api/) e rode
+
 ```bash
-git add .
-git commit -m "Feat: Finaliza a implementação da Prática XX"
-git push origin feature/praticaXX
+npm install
+node setup.js
+npm run dev
 ```
-6. Solicite a Revisão (Pull Request): No GitHub, abra um Pull Request da sua branch feature/praticaXX para a branch principal.
 
-- ⚠️ Atenção!
-- Se o check ✅ não aparecer no `Pull Request`, há erros que precisam ser corrigidos antes da avaliação.
+Isso instalará as dependências para o backend e iniciará o servidor, necessário para criar um usuário, fazer login, e ter acesso às funções do app. **Mantenha o terminal aberto**
 
-## Feedback e Avaliação
-Envie o link do seu Pull Request pela plataforma de ensino. A avaliação usará o sistema de **Code Review:**
-- **Approve (Aprovado):** Código cumpre os requisitos. Faça o merge!
-- **Request Changes (Solicitação de Ajustes):** Há bugs ou melhorias necessárias. Corrija localmente, faça um novo commit e push na mesma branch, e avise no PR para nova revisão.
+7. Crie um usuário, e utilize as funções do app.
 
+## Observações
 
+- Se certifique que o MySQL esteja rodando. Sem ele, nada pode ser feito no app
+    - (No Windows, pesquise por "services.msc", dê Ctrl + Shift + Enter para abrir como administrador, pesquise por MySQL, clique com o botão direito no serviço, e depois em iniciar). 
+- Para testar as rotas e ver a documentação da API REST pelo Postman, importe o arquivo `api.postman_collection.json`, e realize os testes conforme descrito na coleção.

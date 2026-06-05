@@ -1,0 +1,1084 @@
+{
+  "info": {
+    "_postman_id": "d35f7195-7772-4f9c-8714-6c195af5a258",
+    "name": "Gestão Financeira API",
+    "description": "Cada teste com POST, PATCH, ou DELETE possui um exemplo. Para cada requisição, execute o exemplo caso tenha, ou a requisição em si (no caso do GET sem query).\n\nPara os testes, rode primeiro os que estão em \"Rotas Públicas\":\n\n1. Health-check (para checar conexão com a API)\n    \n2. Ready-check (para checar conexão com o banco)\n    \n3. Auth/Criação de Conta\n    \n4. Auth/Login\n    \n\nDepois, rode os outros testes do diretório \"Rotas Privadas\", sempre na seguinte ordem:\n\n1. GET (estado atual)\n    \n2. POST (criação de recurso)\n    \n3. GET (estado após criação)\n    \n4. PUT (atualização de recurso)\n    \n5. GET (estado após atualização)\n    \n6. DELETE (deleção de recurso)\n    \n7. GET (estado após deleção)\n    \n\nValores de Retorno Comuns:\n\n- HTTP 400 BAD REQUEST: Dados inválidos (e.x.: campo não preenchido), JSON inválido no corpo da requisição\n    \n\nExemplo (Dados inválidos):\n\n``` json\n{\n    \"error\": \"Dados inválidos\",\n    \"details\": [\n        {\n            \"expected\": \"string\",\n            \"code\": \"invalid_type\",\n            \"path\": [\n                \"name\"\n            ],\n            \"message\": \"Invalid input: expected string, received undefined\"\n        }\n    ]\n}\n\n ```\n\n- HTTP 409 CONFLICT: registro já existe (e.x.: criar uma categoria que já existe)\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Registro duplicado\"\n}\n\n ```\n\n- HTTP 500 INTERNAL SERVER ERROR: Erro interno do servidor (erro genérico)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55362036"
+  },
+  "item": [
+    {
+      "name": "Rotas Públicas",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Criação de Conta",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {\r",
+                      "    const token = pm.response.json().token;\r",
+                      "\r",
+                      "    pm.collectionVariables.set(\"authToken\", token);\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "# POST /auth/register\n\n## Cria um novo usuário.\n\n### Parâmetros\n\n#### Body\n\n``` json\n{\n    \"name\": string,\n    \"email\": string,\n    \"password\": string\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 201 CREATED: usuário criado, retorna dados do usuário e um token JWT.\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"user\": {\n        \"id\": string,\n        \"name\": string,\n        \"email\": string,\n        \"createdAt\": string // data e hora em formato ISO\n    },\n    \"token\": string // token JWT\n}\n\n ```\n\n- HTTP 409 CONFLICT: usuário já existente\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"E-mail já cadastrado\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Criação de Conta",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{ \"name\": \"Teste\", \"email\": \"teste@email.com\", \"password\": \"123456\" }\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/register",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {\r",
+                      "    const token = pm.response.json().token;\r",
+                      "\r",
+                      "    pm.collectionVariables.set(\"authToken\", token);\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "# POST /auth/login\n\n## Checa se o usuário existe no banco.\n\n### Parâmetros\n\n#### Body\n\n``` json\n{\n    \"email\": string,\n    \"password\": string\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 200 OK: usuário existe, e retorna alguns dados do usuário e um token JWT.\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"user\": {\n        \"id\": string, // CUID\n        \"name\": string,\n        \"email\": string,\n        \"createdAt\": string // data e hora em formato ISO\n    },\n    \"token\": string // token JWT\n}\n\n ```\n\n- HTTP 401 UNAUTHORIZED: usuário inexistente ou senha errada.\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Credenciais inválidas\"\n}\n\n ```\n\n- HTTP 400 BAD REQUEST: email ou senha não fornecidos.\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"E-mail e senha são obrigatórios\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Login",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{ \"email\": \"teste@email.com\", \"password\": \"123456\" }\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/auth/login",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            }
+          ],
+          "description": "# /auth\n\n## Rotas de criação de conta e login\n\n### Conteúdo\n\n- POST /auth/register: Cria uma conta.\n    \n- POST /auth/login: checa se usuário existe\n    \n\n### Observação\n\nAmbas as rotas retornam alguns dados do usuário, além do token JWT, que é usado nas rotas privadas."
+        },
+        {
+          "name": "Health-check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "type": "text"
+              },
+              {
+                "key": "Postman-Token",
+                "value": "<calculated when request is sent>",
+                "type": "text"
+              },
+              {
+                "key": "Host",
+                "value": "<calculated when request is sent>",
+                "type": "text"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "type": "text"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "# GET /\n\n## Checagem de status da API\n\n### Valor de Retorno\n\n- HTTP 200 OK: há conexão\n    \n\n### Observações\n\nCaso ocorra algum erro, certifique-se que:\n\n- O serviço MySQL está rodando.\n    \n- O banco foi criado.\n    \n- Foi realizado o setup do servidor (`cd praticas/gestao-financeira/gestao-financeira-api && node setup.js`).\n    \n- O servidor está rodando (`cd praticas/gestao-financeira/gestao-financeira-api && npm run dev`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Ready-check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ready"
+              ]
+            },
+            "description": "# GET /ready\n\n## Checa conexão com o banco\n\n### Valores de Retorno\n\n- HTTP 200 OK: Conexão com o banco está OK\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"ok\": true\n}\n\n ```\n\n- HTTP 503 SERVICE UNAVAILABLE: Conexão com o banco falhou\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"ok\": false\n}\n\n ```"
+          },
+          "response": []
+        }
+      ],
+      "description": "# Rotas Públicas\n\n## Rotas que não precisam de token JWT\n\n### Conteúdo\n\n- /auth: rotas de criação de conta e login\n    \n- GET /: rota de checagem de status da API\n    \n- GET /ready: rota de checagem de status do banco",
+      "auth": {
+        "type": "noauth"
+      }
+    },
+    {
+      "name": "Rotas Privadas",
+      "item": [
+        {
+          "name": "Categorias",
+          "item": [
+            {
+              "name": "Listar Categorias",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true,
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories"
+                  ]
+                },
+                "description": "# GET /categories\n\n## Lista categorias padrão e criadas pelo usuário\n\n### Valores de Retorno\n\n- HTTP 200 OK: lista de categorias, tanto as padrões quanto as geradas pelo usuário logado\n    \n\nFormato de retorno:\n\n``` json\n[\n    {\n        \"id\": string, // CUID\n        \"name\": string, \n        \"displayName\": string,\n        \"icon\": string,\n        \"background\": string, // cor HEX\n        \"isIncome\": boolean // caso a categoria seja de renda\n        \"isDefault\": boolean // false caso o usuário tenha criado,\n        \"userId\": string // CUID | null, null caso seja padrão,\n        \"createdAt\": string // data e hora em formato ISO\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Criar Categoria",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {\r",
+                      "    const idCategoria = pm.response.json().id;\r",
+                      "    pm.collectionVariables.set(\"idCategoria\", idCategoria);\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories"
+                  ]
+                },
+                "description": "# POST /categories\n\n## Cria uma categoria nova vinculada ao usuário\n\n### Parâmetros\n\n#### Body\n\n``` json\n{\n    \"name\": string, // valor usado na aplicação\n    \"displayName\": string, // valor exibido na listagem\n    \"icon\": string, // tipo de ícone a ser exibido\n    \"background\": string, // cor em formato HEX RGB\n    \"isIncome\": boolean // true caso agregue valor\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 201 CREATED: categoria criada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"id\": string, // CUID\n    \"name\": string,\n    \"displayName\": string,\n    \"icon\": string,\n    \"background\": string,\n    \"isIncome\": boolean,\n    \"isDefault\": false, // sempre false, pois foi o usuário que criou\n    \"userId\": string, // CUID\n    \"createdAt\": string // data e hora em formato ISO\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Criar Categoria",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\": \"Dividendos\",\r\n    \"displayName\": \"Dividendos\",\r\n    \"icon\": \"money\",\r\n    \"background\": \"#112233\",\r\n    \"isIncome\": true\r\n}\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/categories",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "categories"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            },
+            {
+              "name": "Atualizar Categoria",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categories/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "# PATCH /categories/:id\n\n## Atualiza os dados de uma categoria\n\n### Parâmetros\n\n#### Caminho\n\n- /:id: id da categoria, obtida com GET /categories ou GET /users\n    \n\n#### Body\n\n``` json\n    \"name\": string, // valor usado na aplicação\n    \"displayName\": string, // valor exibido na listagem\n    \"icon\": string, // tipo de ícone a ser exibido\n    \"background\": string, // cor em formato HEX RGB\n    \"isIncome\": boolean // true caso agregue valor\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 200 OK: Categoria atualizada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"id\": string, // CUID\n    \"name\": string,\n    \"displayName\": string,\n    \"icon\": string,\n    \"background\": string,\n    \"isIncome\": boolean,\n    \"isDefault\": false, // sempre false, pois foi o usuário que criou\n    \"userId\": string, // CUID\n    \"createdAt\": string // data e hora em formato ISO\n}\n\n ```\n\n- HTTP 404 NOT FOUND: Categoria não encontrada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Categoria não encontrada\"\n}\n\n ```\n\n- HTTP 400 BAD REQUEST: Tentativa de modificação de categoria padrão\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Categorias padrão não podem ser editadas\"\n}\n\n ```\n\n- HTTP 403 FORBIDDEN: Usuário tentou acessar uma categoria de outro usuário\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Sem permissão\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Atualizar Categoria",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\": \"Dividendos\",\r\n    \"displayName\": \"Dividendos\",\r\n    \"icon\": \"money\",\r\n    \"background\": \"#123456\",\r\n    \"isIncome\": true\r\n}\r\n"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/categories/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "categories",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{idCategoria}}"
+                        }
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            },
+            {
+              "name": "Deletar Categoria",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 204) {\r",
+                      "    pm.collectionVariables.unset(\"idCategoria\");\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categories/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "# DELETE /categories/:id\n\n## Deleta a categoria do usuário\n\n### Parâmetros\n\n#### Caminho\n\n- /:id: id da categoria, obtido com GET /categories ou GET /users\n    \n\n### Valores de Retorno\n\n- HTTP 204 NO CONTENT: Categoria deletada; Sem retorno\n    \n- HTTP 404 NOT FOUND: Categoria não encontrada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Categoria não encontrada\"\n}\n\n ```\n\n- HTTP 400 BAD REQUEST: Tentou deletar uma categoria padrão\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Categorias padrão não podem ser excluídas\"\n}\n\n ```\n\n- HTTP 403 FORBIDDEN: Tentou deletar uma categoria de outro usuário"
+              },
+              "response": [
+                {
+                  "name": "Deletar Categoria",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/categories/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "categories",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{idCategoria}}"
+                        }
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            }
+          ],
+          "description": "# /categories\n\n## Rotas de consulta e manipulação de categorias\n\n### Conteúdo\n\n- GET /categories: obtém categorias padrão e as do usuário\n    \n- POST /categories: cria uma categoria nova\n    \n- PATCH /categories/:id: altera uma categoria do usuário\n    \n- DELETE /categories/:id: deleta uma categoria do usuário"
+        },
+        {
+          "name": "Transações",
+          "item": [
+            {
+              "name": "Listar Transações",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/transactions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "transactions"
+                  ]
+                },
+                "description": "# GET /transactions\n\n## Obtém somente as transações do usuário\n\n### Parâmetros\n\n#### Query\n\n- /transactions?month=mm&year=year: filtros de mês e ano\n    \n\n### Valores de Retorno\n\n- HTTP 200 OK: lista de transações, filtradas ou não por mês e ano\n    \n\nFormato de retorno:\n\n``` json\n[\n    {\n        \"id\": string, // CUID\n        \"description\": string,\n        \"value\": string, // numérica\n        \"date\": string, // data e hora em formato ISO\n        \"categoryId\": string, // CUID\n        \"userId\": string, // CUID\n        \"createdAt\": string, // data e hora em formato ISO\n        \"updatedAt\": string, // data e hora em formato ISO\n        \"category\": {\n            \"id\": string,\n            \"name\": string,\n            \"displayName\": string,\n            \"icon\": string,\n            \"background\": string, // RGB HEX\n            \"isIncome\": boolean,\n            \"isDefault\": boolean,\n            \"userId\": string,\n            \"createdAt\": string\n        }\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Criar Transação",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {\r",
+                      "    pm.collectionVariables.set(\"idTransacao\", pm.response.json().id);\r",
+                      "}\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/transactions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "transactions"
+                  ]
+                },
+                "description": "# POST /transactions\n\n## Cria nova transação de um usuário\n\n### Parâmetros\n\n#### Body\n\n``` json\n{\n  \"description\": string,\n  \"value\": number,\n  \"date\": string, // data (ou data e hora) em formato ISO\n  \"categoryId\": string\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 201 CREATED: transação criada\n    \n\nFormato de retorno:\n\n``` json\n[\n    {\n        \"id\": string, // CUID\n        \"description\": string,\n        \"value\": string, // numérica\n        \"date\": string, // data e hora em formato ISO\n        \"categoryId\": string, // CUID\n        \"userId\": string, // CUID\n        \"createdAt\": string, // data e hora em formato ISO\n        \"updatedAt\": string, // data e hora em formato ISO\n        \"category\": {\n            \"id\": string,\n            \"name\": string,\n            \"displayName\": string,\n            \"icon\": string,\n            \"background\": string, // RGB HEX\n            \"isIncome\": boolean,\n            \"isDefault\": boolean,\n            \"userId\": string,\n            \"createdAt\": string\n        }\n    }\n]\n\n ```\n\n- HTTP 404 NOT FOUND: Categoria não encontrada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Categoria não encontrada\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Criar Transação",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"description\": \"Dividendos PETR4\",\r\n  \"value\": 3500.50,\r\n  \"date\": \"2026-04-29\",\r\n  \"categoryId\": \"cmpsenwwr0001fs1zaog4luh4\"\r\n}\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/transactions",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "transactions"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": "",
+                  "header": [],
+                  "cookie": [
+                    {
+                      "expires": "Invalid Date",
+                      "domain": "",
+                      "path": ""
+                    }
+                  ],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Deletar Transação",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 204) {\r",
+                      "    pm.collectionVariables.unset(\"idTransaction\");\r",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/transactions/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "# /transactions/:id\n\n## Deleta transação de usuário\n\n### Parâmetros\n\n#### Caminho\n\n- /:id: ID da transação\n    \n\n### Valores de Retorno\n\n- HTTP 204 NO CONTENT: Transação deletada\n    \n- HTTP 404 NOT FOUND: Transação não encontrada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Transação não encontrada\"\n}\n\n ```\n\n- HTTP 403 FORBIDDEN: Tentativa de deleção de transação de outro usuário\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Sem permissão\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Deletar Transação",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/transactions/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "transactions",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{idTransacao}}"
+                        }
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            },
+            {
+              "name": "Atualizar Transação",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/transactions/:id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "# PATCH /transactions/:id\n\n## Atualiza uma transação\n\n### Parâmetros\n\n#### Caminho\n\n- /:id: ID da transação\n    \n\n#### Body\n\n``` json\n{\n  \"description\": string,\n  \"value\": number,\n  \"date\": string, // data (ou data e hora) em formato ISO\n  \"categoryId\": string\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 200 OK: Transação atualizada\n    \n- HTTP 404 NOT FOUND: Transação não encontrada\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"error\": \"Transação não encontrada\"\n}\n\n ```\n\n- HTTP 403 FORBIDDEN: Tentativa de alteração de transação de outro usuário\n    \n\nFormato de retorno:\n\n``` javascript\n{\n    \"error\": \"Sem permissão\"\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Atualizar Transação",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"description\": \"Dividendos PETR4\",\r\n  \"value\": 2100.00,\r\n  \"date\": \"2026-04-29\",\r\n  \"categoryId\": \"cmpsenwwr0001fs1zaog4luh4\"\r\n}\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/transactions/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "transactions",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "{{idTransacao}}"
+                        }
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": "",
+                  "header": [],
+                  "cookie": [
+                    {
+                      "expires": "Invalid Date",
+                      "domain": "",
+                      "path": ""
+                    }
+                  ],
+                  "body": ""
+                }
+              ]
+            }
+          ],
+          "description": "# /transactions\n\n## Rotas de consulta e manipulação de categorias\n\n### Conteúdo\n\n- GET /transactions: obtém as transações de um usuário\n    \n- POST /transactions: cria uma nova transação\n    \n- PATCH /transactions/:id: altera uma transação do usuário\n    \n- DELETE /transactions/:id: deleta uma transação do usuário"
+        },
+        {
+          "name": "Usuários",
+          "item": [
+            {
+              "name": "Informações do Usuário",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                },
+                "description": "### Valores de Retorno\n\n- HTTP 200 OK: Informações do usuário, incluindo categorias e transações que criou\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"id\": string, // CUID\n    \"name\": string,\n    \"email\": string,\n    \"createdAt\": string, // data e hora em formato ISO\n    \"categories\": Array<Category>, // lista de categorias (ver formato em Rotas Privadas/Categorias/Listar Categorias)\n    \"transactions\": Array<Transaction> // lista de transações (ver formato em Rotas Privadas/Transações/Listar Transações)\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Atualizar Usuário",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                },
+                "description": "# PATCH /users\n\n## Atualiza informações do usuário\n\n### Parâmetros\n\n#### Body\n\n``` json\n{\n    \"name\": string,\n    \"email\": string,\n    \"password\": string\n}\n\n ```\n\n### Valores de Retorno\n\n- HTTP 200 OK: Usuário atualizado\n    \n\nFormato de retorno:\n\n``` json\n{\n    \"id\": string, // CUID\n    \"name\": string,\n    \"email\": string,\n    \"createdAt\": string, // data e hora em formato ISO\n    \"categories\": Array<Category>, // lista de categorias (ver formato em Rotas Privadas/Categorias/Listar Categorias)\n    \"transactions\": Array<Transaction> // lista de transações (ver formato em Rotas Privadas/Transações/Listar Transações)\n}\n\n ```"
+              },
+              "response": [
+                {
+                  "name": "Atualizar Usuário",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\": \"João\",\r\n    \"email\": \"joao@gmail.com\",\r\n    \"password\": \"123deOliveira4\"\r\n}\r\n",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/users",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": null,
+                  "header": null,
+                  "cookie": [],
+                  "body": null
+                }
+              ]
+            }
+          ],
+          "description": "# /users\n\n## Rotas relacionadas ao usuário logado\n\n### Conteúdo\n\n- GET /users: obtém informações do usuário\n    \n- PATCH /users: altera informações do usuário"
+        }
+      ],
+      "description": "# Rotas Privadas\n\n## Rotas que precisam de JWT\n\n### Conteúdo:\n\n- /categories: rotas referentes às categorias de transações, como \"Comida\", \"Ações\", \"Salário\", etc.\n    \n- /transactions: rotas referentes às transações em si, como \"Compra de Lanche, 29/05/2026, Comida\".\n    \n- /users: rotas referentes ao usuário, para obter ou alterar seus dados.\n    \n\n### Observações\n\nCaso o token tenha expirado, faça login novamente.\n\nEssas rotas precisam do token JWT pois obtêm dados com referências ao usuário logado, como categorias e transações próprias.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{authToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}
